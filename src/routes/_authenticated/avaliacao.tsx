@@ -22,7 +22,7 @@ const searchSchema = z.object({
   modalidade: z.enum(["laser", "led"]).catch("laser"),
 });
 
-export const Route = createFileRoute("/avaliacao")({
+export const Route = createFileRoute("/_authenticated/avaliacao")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
