@@ -128,3 +128,13 @@
     var(--color-accent) 100%
   );
 }
+
+/* Only the app's own clear button should show inside search fields. */
+@layer base {
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+}
