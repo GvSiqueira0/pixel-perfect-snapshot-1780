@@ -62,7 +62,7 @@ function matches(p: Patient, needle: string) {
   return normalize(haystack).includes(needle);
 }
 
-export const Route = createFileRoute("/historico")({
+export const Route = createFileRoute("/_authenticated/historico")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [

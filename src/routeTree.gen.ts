@@ -9,104 +9,153 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AvaliacaoRouteImport } from './routes/avaliacao'
-import { Route as GuiaRouteImport } from './routes/guia'
-import { Route as HistoricoRouteImport } from './routes/historico'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAvaliacaoRouteImport } from './routes/_authenticated/avaliacao'
+import { Route as AuthenticatedGuiaRouteImport } from './routes/_authenticated/guia'
+import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authenticated/historico'
 
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AvaliacaoRoute = AvaliacaoRouteImport.update({
+const AuthenticatedAvaliacaoRoute = AuthenticatedAvaliacaoRouteImport.update({
   id: '/avaliacao',
   path: '/avaliacao',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const GuiaRoute = GuiaRouteImport.update({
+const AuthenticatedGuiaRoute = AuthenticatedGuiaRouteImport.update({
   id: '/guia',
   path: '/guia',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const HistoricoRoute = HistoricoRouteImport.update({
+const AuthenticatedHistoricoRoute = AuthenticatedHistoricoRouteImport.update({
   id: '/historico',
   path: '/historico',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/avaliacao': typeof AvaliacaoRoute
-  '/guia': typeof GuiaRoute
-  '/historico': typeof HistoricoRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/auth': typeof AuthRoute
+  '/avaliacao': typeof AuthenticatedAvaliacaoRoute
+  '/guia': typeof AuthenticatedGuiaRoute
+  '/historico': typeof AuthenticatedHistoricoRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/avaliacao': typeof AvaliacaoRoute
-  '/guia': typeof GuiaRoute
-  '/historico': typeof HistoricoRoute
+  '/auth': typeof AuthRoute
+  '/avaliacao': typeof AuthenticatedAvaliacaoRoute
+  '/guia': typeof AuthenticatedGuiaRoute
+  '/historico': typeof AuthenticatedHistoricoRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/avaliacao': typeof AvaliacaoRoute
-  '/guia': typeof GuiaRoute
-  '/historico': typeof HistoricoRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/avaliacao': typeof AuthenticatedAvaliacaoRoute
+  '/_authenticated/guia': typeof AuthenticatedGuiaRoute
+  '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/avaliacao' | '/guia' | '/historico'
+  fullPaths: '/' | '/auth' | '/avaliacao' | '/guia' | '/historico'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/avaliacao' | '/guia' | '/historico'
-  id: '__root__' | '/' | '/avaliacao' | '/guia' | '/historico'
+  to: '/auth' | '/avaliacao' | '/guia' | '/historico' | '/'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/avaliacao'
+    | '/_authenticated/guia'
+    | '/_authenticated/historico'
+    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AvaliacaoRoute: typeof AvaliacaoRoute
-  GuiaRoute: typeof GuiaRoute
-  HistoricoRoute: typeof HistoricoRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/avaliacao': {
-      id: '/avaliacao'
+    '/_authenticated/avaliacao': {
+      id: '/_authenticated/avaliacao'
       path: '/avaliacao'
       fullPath: '/avaliacao'
-      preLoaderRoute: typeof AvaliacaoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedAvaliacaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/guia': {
-      id: '/guia'
+    '/_authenticated/guia': {
+      id: '/_authenticated/guia'
       path: '/guia'
       fullPath: '/guia'
-      preLoaderRoute: typeof GuiaRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedGuiaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/historico': {
-      id: '/historico'
+    '/_authenticated/historico': {
+      id: '/_authenticated/historico'
       path: '/historico'
       fullPath: '/historico'
-      preLoaderRoute: typeof HistoricoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedHistoricoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAvaliacaoRoute: typeof AuthenticatedAvaliacaoRoute
+  AuthenticatedGuiaRoute: typeof AuthenticatedGuiaRoute
+  AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAvaliacaoRoute: AuthenticatedAvaliacaoRoute,
+  AuthenticatedGuiaRoute: AuthenticatedGuiaRoute,
+  AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AvaliacaoRoute: AvaliacaoRoute,
-  GuiaRoute: GuiaRoute,
-  HistoricoRoute: HistoricoRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
