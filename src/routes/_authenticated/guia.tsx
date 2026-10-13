@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { speak } from "@/lib/speech";
 
-export const Route = createFileRoute("/guia")({
+export const Route = createFileRoute("/_authenticated/guia")({
   head: () => ({
     meta: [
       { title: "Guia de uso dos aparelhos — FotoBio Clínica" },

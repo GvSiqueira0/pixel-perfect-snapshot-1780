@@ -8,7 +8,7 @@ import { speak } from "@/lib/speech";
 import { cn } from "@/lib/utils";
 import type { Modality } from "@/lib/types";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "FotoBio Clínica — Laser e LED na fisioterapia" },
