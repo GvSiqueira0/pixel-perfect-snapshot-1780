@@ -1,0 +1,34 @@
+node_modules
+.git
+.gitignore
+
+# Build artifacts (rebuilt inside the image)
+dist
+dist-ssr
+.output
+.vinxi
+.nitro
+.tanstack
+
+# Tooling / editors
+.vscode
+.idea
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Local secrets only; keep .env because it holds the public VITE_* build args
+# needed to bake the client bundle. *.local overrides are excluded.
+*.local

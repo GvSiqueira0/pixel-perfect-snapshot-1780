@@ -1,8 +1,6 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Activity, LogOut } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, Activity } from "lucide-react";
 import type { ReactNode } from "react";
-
-import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   title: string;
@@ -12,14 +10,17 @@ interface Props {
   action?: ReactNode;
 }
 
+// TEMP: login desativado para testes. Para reativar o botão "Sair da conta":
+//   1) import { Link, useNavigate } from "@tanstack/react-router";
+//   2) import { ArrowLeft, Activity, LogOut } from "lucide-react";
+//   3) import { supabase } from "@/integrations/supabase/client";
+//   4) const navigate = useNavigate();
+//      const handleSignOut = async () => {
+//        await supabase.auth.signOut();
+//        navigate({ to: "/auth", replace: true });
+//      };
+//   5) restaurar o <button> de logout abaixo do {action}
 export function AppShell({ title, subtitle, back, children, action }: Props) {
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
-  };
-
   return (
     <div className="min-h-screen bg-background pb-16">
       <header className="brand-gradient sticky top-0 z-30 px-4 pb-5 pt-[max(1rem,env(safe-area-inset-top))] text-primary-foreground shadow-[var(--shadow-raised)]">
@@ -42,14 +43,6 @@ export function AppShell({ title, subtitle, back, children, action }: Props) {
             {subtitle ? <p className="mt-1 text-sm opacity-90">{subtitle}</p> : null}
           </div>
           {action}
-          <button
-            type="button"
-            onClick={handleSignOut}
-            aria-label="Sair da conta"
-            className="mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/15 transition active:scale-95"
-          >
-            <LogOut className="h-5 w-5" />
-          </button>
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-6">{children}</main>
