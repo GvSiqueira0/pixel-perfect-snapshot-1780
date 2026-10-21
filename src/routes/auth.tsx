@@ -4,7 +4,6 @@ import { Activity, Loader2, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,13 +16,13 @@ export const Route = createFileRoute("/auth")({
       {
         name: "description",
         content:
-          "Acesse o FotoBio Clínica com e-mail, Google ou Apple para usar o simulador de fotobiomodulação.",
+          "Acesse o FotoBio Clínica com e-mail ou Google para usar o simulador de fotobiomodulação.",
       },
       { property: "og:title", content: "Entrar — FotoBio Clínica" },
       {
         property: "og:description",
         content:
-          "Acesse o FotoBio Clínica com e-mail, Google ou Apple para usar o simulador de fotobiomodulação.",
+          "Acesse o FotoBio Clínica com e-mail ou Google para usar o simulador de fotobiomodulação.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -55,21 +54,13 @@ function GoogleIcon() {
   );
 }
 
-function AppleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true" fill="currentColor">
-      <path d="M17.05 12.54c-.03-2.89 2.36-4.27 2.47-4.34-1.35-1.97-3.44-2.24-4.18-2.27-1.78-.18-3.47 1.05-4.37 1.05-.9 0-2.29-1.02-3.77-1-1.94.03-3.72 1.13-4.72 2.86-2.01 3.49-.51 8.66 1.45 11.5.96 1.39 2.1 2.95 3.6 2.89 1.45-.06 2-.93 3.75-.93s2.25.93 3.78.9c1.56-.03 2.55-1.41 3.5-2.8 1.1-1.61 1.55-3.17 1.58-3.25-.04-.02-3.03-1.16-3.09-4.61ZM14.16 4.06c.8-.97 1.34-2.31 1.19-3.65-1.15.05-2.55.77-3.38 1.74-.74.86-1.39 2.23-1.22 3.55 1.29.1 2.6-.65 3.41-1.64Z" />
-    </svg>
-  );
-}
-
 function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [loading, setLoading] = useState<"email" | "google" | "apple" | null>(null);
+  const [loading, setLoading] = useState<"email" | "google" | null>(null);
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
 
   const handleEmail = async (e: React.FormEvent) => {
@@ -103,15 +94,14 @@ function AuthPage() {
     }
   };
 
-  const handleSocial = async (provider: "google" | "apple") => {
-    setLoading(provider);
+  const handleSocial = async () => {
+    setLoading("google");
     try {
-      const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: window.location.origin,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.origin },
       });
-      if (result.error) throw result.error;
-      if (result.redirected) return;
-      navigate({ to: "/" });
+      if (error) throw error;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Falha no login social. Tente novamente.");
       setLoading(null);
@@ -160,12 +150,10 @@ function AuthPage() {
       <main className="mx-auto -mt-8 max-w-md px-4 pb-12">
         <div className="surface-card p-6">
           <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1" role="tablist">
-            {(
-              [
-                { id: "signin" as const, label: "Entrar" },
-                { id: "signup" as const, label: "Criar conta" },
-              ]
-            ).map((tab) => (
+            {[
+              { id: "signin" as const, label: "Entrar" },
+              { id: "signup" as const, label: "Criar conta" },
+            ].map((tab) => (
               <button
                 key={tab.id}
                 type="button"
@@ -244,28 +232,10 @@ function AuthPage() {
               variant="outline"
               className="min-h-12 w-full"
               disabled={loading !== null}
-              onClick={() => handleSocial("google")}
+              onClick={handleSocial}
             >
-              {loading === "google" ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <GoogleIcon />
-              )}
+              {loading === "google" ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon />}
               Continuar com Google
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="min-h-12 w-full"
-              disabled={loading !== null}
-              onClick={() => handleSocial("apple")}
-            >
-              {loading === "apple" ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <AppleIcon />
-              )}
-              Continuar com Apple
             </Button>
           </div>
         </div>

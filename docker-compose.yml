@@ -1,12 +1,49 @@
 services:
+  # Applies the SQL migrations to the database, then exits. `web` waits for it.
+  migrate:
+    image: postgres:17-alpine
+    env_file:
+      - .env
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -z "$$SUPABASE_DB_URL" ]; then
+          echo "SUPABASE_DB_URL is not set; skipping migrations."
+          exit 0
+        fi
+        tries=0
+        until pg_isready -d "$$SUPABASE_DB_URL" >/dev/null 2>&1; do
+          tries=$$((tries + 1))
+          if [ "$$tries" -ge 30 ]; then
+            echo "ERROR: database not reachable after 30s." >&2
+            echo "Hint: if the host resolves to IPv6 only, use the Supabase pooler" >&2
+            echo "connection string (postgres.<ref>@aws-0-<region>.pooler.supabase.com)." >&2
+            exit 1
+          fi
+          sleep 1
+        done
+        psql "$$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f /migrations/0000_create_profiles.sql
+    volumes:
+      - ./drizzle/migrations:/migrations:ro
+    restart: "no"
+
   # Production image: builds the app (nitro node-server) and serves it on :3000
   web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
+        VITE_SUPABASE_PROJECT_ID: ${VITE_SUPABASE_PROJECT_ID}
     image: pixel-perfect-snapshot:latest
+    # Always rebuild the image on `up` so the running app matches the code/.env.
+    pull_policy: build
     env_file:
       - .env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -16,11 +53,12 @@ services:
     restart: unless-stopped
 
   # Development with hot reload: `docker compose --profile dev up`
-  # Runs Vite dev server on :8080 (host "::" is set by the Lovable config).
+  # Runs the Vite dev server inside a container. Mapped to host :8081 so it
+  # never collides with a local `bun run dev` (Vite default :8080).
   dev:
     image: docker.io/oven/bun:1
     working_dir: /app
-    command: sh -c "bun install && bun run dev"
+    command: sh -c "bun install && bun run dev --host 0.0.0.0 --port 8080"
     env_file:
       - .env
     environment:
@@ -30,7 +68,7 @@ services:
       # Keep container node_modules isolated from the host
       - node_modules:/app/node_modules
     ports:
-      - "8080:8080"
+      - "8081:8080"
     profiles:
       - dev
 

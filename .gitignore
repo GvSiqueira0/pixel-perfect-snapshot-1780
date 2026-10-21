@@ -20,6 +20,17 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Environment (contains Supabase keys)
+.env
+.env.*
+!.env.example
+env/
+
+# Lockfiles: this project uses bun (bun.lock). Ignore npm/yarn/pnpm leftovers.
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

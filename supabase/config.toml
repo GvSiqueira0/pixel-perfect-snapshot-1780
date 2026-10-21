@@ -1,1 +1,3 @@
+# Lovable Cloud project reference. Not used at runtime by this app;
+# kept for tooling compatibility. Update it to your own Supabase project ref.
 project_id = "vnraygvuqqrbthslorqb"

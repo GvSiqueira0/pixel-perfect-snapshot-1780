@@ -32,3 +32,5 @@ docker-compose.yml
 # Local secrets only; keep .env because it holds the public VITE_* build args
 # needed to bake the client bundle. *.local overrides are excluded.
 *.local
+.env
+env/

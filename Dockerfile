@@ -9,9 +9,19 @@ WORKDIR /app
 COPY package.json bun.lock bunfig.toml ./
 RUN bun install --frozen-lockfile
 
-# Copy the rest of the project. Vite reads .env at build time and inlines the
-# public VITE_* values into the client bundle.
+# Copy the rest of the project.
 COPY . .
+
+# Public build-time values. Vite inlines these into the client bundle, so they
+# must be present when `bun run build` runs. Supplied as build args so the rest
+# of .env (e.g. DB password) never enters the image.
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_PUBLISHABLE_KEY
+ARG VITE_SUPABASE_PROJECT_ID
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL \
+    VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY \
+    VITE_SUPABASE_PROJECT_ID=$VITE_SUPABASE_PROJECT_ID
+
 RUN bun run build
 
 # ---------- Runtime stage ----------
