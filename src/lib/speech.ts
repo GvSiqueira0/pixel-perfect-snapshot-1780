@@ -4,8 +4,21 @@ export function speak(text: string) {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "pt-BR";
   u.rate = 0.98;
+  const voice = pickPortugueseVoice();
+  if (voice) u.voice = voice;
   window.speechSynthesis.speak(u);
   return true;
+}
+
+function pickPortugueseVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  return (
+    voices.find((v) => v.lang.toLowerCase() === "pt-br") ??
+    voices.find((v) => v.lang.toLowerCase().startsWith("pt")) ??
+    null
+  );
 }
 
 export function stopSpeaking() {
